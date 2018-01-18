@@ -7,11 +7,13 @@ frontend = Blueprint('frontend', __name__)
 
 @frontend.route("/")
 def home():
-	return render_template('index.html')
-
-
-@frontend.route("/fullstories")
-def fullstories():
 	hn_api = HackerNewsAPI()
-	topstories = hn_api.get_topstories_with_comments()
+	topstories = hn_api.get_detailed_topstories()
 	return render_template('index.html', context={'topstories': topstories})
+
+
+@frontend.route("/detail/<int:story_id>")
+def story(story_id):
+	hn_api = HackerNewsAPI()
+	story = hn_api.get_story_with_comments(story_id)
+	return render_template('detail.html', context=story)

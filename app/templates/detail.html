@@ -10,8 +10,10 @@
 {% block content %}
   <h1>Hello, Bootstrap</h1>
 
-  {% for story in context.topstories %}
-  	{{ story.title }} | <a href="/detail/{{ story.id }}">{{ story.id }}</a><br/>
+  {{ context.story.title }} | {{ context.story.id }}<br/>
+
+  {% for comment in context.comments %}
+  	{{ comment.id }} | {{ comment.text }}
   {% endfor %}
 
 {% endblock %}
