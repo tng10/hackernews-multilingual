@@ -9,9 +9,95 @@
 
 {% block content %}
   <h1>Hello, Bootstrap</h1>
+  <div>
+  	<label>Switch language</label>
+  	<select name="switch-lang" id="switch-lang">
+  		<option value="en" selected>English</option>
+  		<option value="pt">Portuguese</option>
+  		<option value="de">German</option>
+  	</select>
+  </div>
 
-  {% for story in context.topstories %}
-  	{{ story.title }} | <a href="/detail/{{ story.id }}">{{ story.id }}</a><br/>
-  {% endfor %}
+	<table class="topstories">
+		<thead>
+			<tr>
+				<th>ID</th>
+				<th>Title</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for story in context.topstories %}
+				<tr>
+					<td><a href="/detail/{{ story.id }}">{{ story.id }}</a></td>
+					<td class="title" data-default="{{ story.title }}">{{ story.title }}</td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	
+{% endblock %}
 
+{% block scripts %}
+{{ super() }}
+<script>
+
+	var requested_translations = [];
+
+	function resetTranslations(){
+		$("table.topstories tbody tr td.title").each(function(index, value){
+			$(value).html($(value).data('default'));
+		});
+	}
+
+	function poolingResultsUnbabel(){
+		// could have developed an endpoint and subscribe it unbabel api in order to receive data when translations get done ...
+		$.ajax({
+			  url: "/api/get-translations/" + requested_translations.join(','),
+			  type: 'GET',
+			  contentType:"application/json; charset=utf-8",
+				dataType:"json"
+		}).success(function(data) {
+			console.log('success - get');
+			console.log(data);
+		});
+	}
+
+	function requestTranslations(texts, target_lang){
+		$.ajax({
+			  url: "/api/request-translation",
+			  type: 'POST',
+			  contentType:"application/json; charset=utf-8",
+				dataType:"json",
+			  data: JSON.stringify({'texts': texts, 'source_lang': 'en', 'target_lang': target_lang})
+			}).success(function(data) {
+			  console.log('success - request');
+			  console.log(data);
+			  requested_translations = data;
+
+			  // start pooling here ...
+			  poolingResultsUnbabel();
+
+			});
+	}
+
+	$(document).ready(function(){
+		console.log('ready');
+
+		$('#switch-lang').on('change', function (e) {
+			var optionSelected = $("option:selected", this);
+			var valueSelected = this.value;
+
+			if (valueSelected == 'en') {
+				resetTranslations();
+			} else {
+				titles = $.map($("table.topstories tbody tr td.title"), function( elem ) {
+				  return elem.dataset.default;
+				});
+				requestTranslations(titles, valueSelected);
+			}
+
+		});
+
+	});
+</script>
 {% endblock %}

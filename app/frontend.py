@@ -23,7 +23,7 @@ def story(story_id):
 @frontend.route("/api/request-translation", methods=['POST'])
 def request_translation():
 	data = request.json
-	request_translation_response = ub_api.bulk_translate(data['texts'])
+	request_translation_response = ub_api.bulk_translate(data['texts'], data['source_lang'], data['target_lang'])
 	return jsonify([t.uid for t in request_translation_response])
 
 
@@ -35,7 +35,7 @@ def request_story_translation(story_id):
 	return jsonify([t.uid for t in request_translation_response])
 
 
-@frontend.route("/api/get-translation/<request_list>", methods=['GET'])
+@frontend.route("/api/get-translations/<request_list>", methods=['GET'])
 def get_translations(request_list):
 	request_list = map(str, request_list.rstrip(',').split(','))
 	translation_response = ub_api.get_translations(request_list)
