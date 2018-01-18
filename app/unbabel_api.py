@@ -45,5 +45,5 @@ class UnbabelAPI(object):
 		
 		full_translations_data = []
 		if all(map(lambda x: True if x.status_code == 200 else False, full_translations)):
-			full_translations_data = [t.json() for t in full_translations if t is not None]
+			full_translations_data = [t.json() for t in full_translations if t is not None and t.json()['status'] == 'completed']
 		return full_translations_data
