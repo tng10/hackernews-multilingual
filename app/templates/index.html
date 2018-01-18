@@ -9,4 +9,9 @@
 
 {% block content %}
   <h1>Hello, Bootstrap</h1>
+
+  {% for story in context.topstories %}
+  	{{ story.title }} <br/>
+  {% endfor %}
+
 {% endblock %}
