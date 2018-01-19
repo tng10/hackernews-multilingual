@@ -11,6 +11,11 @@ In order to install it
 pip install -r requirements.txt
 ```
 
+### Crontab (as root)
+```
+\# python schedule_cron.py
+```
+
 ### Usage
 ```
 python run.py
