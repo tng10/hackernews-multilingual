@@ -24,10 +24,10 @@ def create_app(configfile=None):
     # in detail inside the Flask docs:
     # http://flask.pocoo.org/docs/patterns/appfactories/
 
-    app = Flask(__name__)
+    app = Flask(__name__, static_url_path='/app/static')
 
     # We use Flask-Appconfig here, but this is not a requirement
-    #AppConfig(app)
+    AppConfig(app)
 
     # Install our Bootstrap extension
     Bootstrap(app)

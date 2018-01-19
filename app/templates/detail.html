@@ -1,19 +1,29 @@
-{% extends "bootstrap/base.html" %}
-{% block title %}This is an example page{% endblock %}
-
-{% block navbar %}
-<div class="navbar navbar-fixed-top">
-  <!-- ... -->
-</div>
-{% endblock %}
+{% extends "layout.html" %}
+{% block title %}Story - {{ context.story.title }}{% endblock %}
 
 {% block content %}
-  <h1>Hello, Bootstrap</h1>
+<div class="jumbotron detail">
+	<div class="container">
+		<h1>{{ context.story.title }}</h1>
 
-  {{ context.story.title }} | {{ context.story.id }}<br/>
+		<div class="pull-right">
+			<h4><a href="{{ context.story.url }}" target="_blank">Ref.</a></h4>
+		</div>
 
+		<p>{{ context.story.text }}</p>
+	</div>
+</div>
+
+<div class="container">
+	<ul class="comments media-list">
   {% for comment in context.comments %}
-  	{{ comment.id }} | {{ comment.text }}
+    <li class="media">
+    	<div class="media-body">
+      	<blockquote>{{ comment.text }}</blockquote>
+      </div>
+  	</li>
   {% endfor %}
+  </ul>
+</div>
 
 {% endblock %}

@@ -1,24 +1,36 @@
-{% extends "bootstrap/base.html" %}
+{% extends "layout.html" %}
 {% block title %}This is an example page{% endblock %}
 
+{% block styles %}
+{{super()}}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/0.8.2/css/flag-icon.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.6.2/css/bootstrap-select.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+{% endblock %}
+
 {% block navbar %}
-<div class="navbar navbar-fixed-top">
-  <!-- ... -->
-</div>
+{{ super() }}
+{% endblock %}
+
+{% block language_switcher %}
+	{% include 'language_switcher.html' %}
 {% endblock %}
 
 {% block content %}
-  <h1>Hello, Bootstrap</h1>
-  <div>
-  	<label>Switch language</label>
-  	<select name="switch-lang" id="switch-lang">
-  		<option value="en" selected>English</option>
-  		<option value="pt">Portuguese</option>
-  		<option value="de">German</option>
-  	</select>
+<div class="jumbotron home">
+  <div class="container">
+    <h1>Hacker News Multilingual Support!</h1>
+    <p>This is a small project using that provides some extra functionalites on top of HackerNews website.
+    <br/>Thanks to HackerNews API and Unbabel API we can have content translated in different languages.</p>
   </div>
+</div>
 
-	<table class="topstories">
+<div class="container">
+	<button class="btn btn-info btn-md btn-translating"><i class="fa fa-circle-o-notch fa-spin"></i> Translating</button>
+</div>
+
+<div class="container">
+	<table class="topstories table table-hover">
 		<thead>
 			<tr>
 				<th>ID</th>
@@ -34,96 +46,18 @@
 			{% endfor %}
 		</tbody>
 	</table>
-	
+</div>
 {% endblock %}
 
 {% block scripts %}
 {{ super() }}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.6.2/js/bootstrap-select.min.js"></script>
+<script src="/app/static/js/main.js"></script>
 <script>
-
-	var requested_translations = [];
-
-	function resetTranslations(){
-		$("table.topstories tbody tr td.title").each(function(index, value){
-			$(value).html($(value).data('default'));
-		});
-	}
-
-	function checkTranslationsStatus(data, num_items){
-		if (data.length > 0 && data.length == num_items) {
-			return data.every(function(elem) { return true ? elem.status == 'completed' : false });
-		}
-		return false;
-	}
-
-	function pollingResultsUnbabel(){
-			console.log('polling translations...');
-			polling_every = 3000 // milliseconds
-			setTimeout(function(){
-				if (!is_done) {
-			    $.ajax({ 
-			    	url: "/api/get-translations/" + requested_translations.join(','), 
-			    	contentType:"application/json; charset=utf-8",
-			    	dataType: "json",
-						success: function(data){
-			        is_done = checkTranslationsStatus(data, requested_translations.length);
-			        response = data;
-			    	}, complete: pollingResultsUnbabel, timeout: 2000
-			    });
-			  } else {
-			  	console.log('translations received...');
-			  	translateTitles(response);
-			  	cacheTranslations(response);
-			  }
-			}, polling_every);
-	}
-
-	function translateTitles(data){
-		console.log('translating content');
-		$.each(data, function(i, v){
-			$('*[data-default="' + v.text +'"]').html(v.translatedText);
-		});
-	}
-
-	function requestTranslations(texts, target_lang){
-		console.log('requesting translations...');
-		$.ajax({
-			  url: "/api/request-translation",
-			  type: 'POST',
-			  contentType:"application/json; charset=utf-8",
-				dataType:"json",
-			  data: JSON.stringify({'texts': texts, 'source_lang': 'en', 'target_lang': target_lang})
-			}).success(function(data) {
-			  is_translated = data['is_translated'];
-			  requested_translations = data['results'];
-			  console.log('translations requested successfully.');
-			  if (is_translated){
-			  	console.log('translations were found in cache.');
-			  	translateTitles(requested_translations)
-			  } else {
-				  // start polling results
-				  is_done = false;
-				  response = [];
-					pollingResultsUnbabel();
-				}
-			});
-	}
-
-	function cacheTranslations(translations){
-		console.log('caching translations...');
-		$.ajax({
-			  url: "/api/cache-translations",
-			  type: 'POST',
-			  contentType:"application/json; charset=utf-8",
-				dataType:"json",
-			  data: JSON.stringify(translations)
-			}).success(function(data) {
-			  console.log('translations cached successfully.');
-			});
-	}
-
 	$(document).ready(function(){
 		console.log('ready');
+
+		$('.selectpicker').selectpicker();
 
 		$('#switch-lang').on('change', function (e) {
 			var optionSelected = $("option:selected", this);

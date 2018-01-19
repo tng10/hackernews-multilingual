@@ -1,0 +1,17 @@
+body {
+  padding-top: 50px;
+  padding-bottom: 20px;
+}
+
+div.lang-container {
+	padding-top: 10px;
+}
+
+button.btn-translating {
+	display: none;
+}
+
+ul.comments {
+	margin-top: 80px;
+}
+
