@@ -73,6 +73,7 @@
 			  } else {
 			  	console.log('translations received...');
 			  	translateTitles(response);
+			  	cacheTranslations(response);
 			  }
 			}, polling_every);
 	}
@@ -93,12 +94,31 @@
 				dataType:"json",
 			  data: JSON.stringify({'texts': texts, 'source_lang': 'en', 'target_lang': target_lang})
 			}).success(function(data) {
-			  requested_translations = data;
+			  is_translated = data['is_translated'];
+			  requested_translations = data['results'];
 			  console.log('translations requested successfully.');
-			  // start polling results
-			  is_done = false;
-			  response = [];
-				pollingResultsUnbabel();
+			  if (is_translated){
+			  	console.log('translations were found in cache.');
+			  	translateTitles(requested_translations)
+			  } else {
+				  // start polling results
+				  is_done = false;
+				  response = [];
+					pollingResultsUnbabel();
+				}
+			});
+	}
+
+	function cacheTranslations(translations){
+		console.log('caching translations...');
+		$.ajax({
+			  url: "/api/cache-translations",
+			  type: 'POST',
+			  contentType:"application/json; charset=utf-8",
+				dataType:"json",
+			  data: JSON.stringify(translations)
+			}).success(function(data) {
+			  console.log('translations cached successfully.');
 			});
 	}
 
