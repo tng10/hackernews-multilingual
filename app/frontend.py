@@ -1,6 +1,8 @@
 from flask import Blueprint, render_template, jsonify, request
 from hackernews_api import HackerNewsAPI
 from unbabel_api import UnbabelAPI
+from cache import HackerNewsCacheAPI
+
 
 hn_api = HackerNewsAPI()
 ub_api = UnbabelAPI()
@@ -11,6 +13,8 @@ frontend = Blueprint('frontend', __name__)
 @frontend.route("/", methods=['GET'])
 def home():
 	topstories = hn_api.get_detailed_topstories()
+	result = topstories_collection.insert_many(topstories)
+	print result
 	return render_template('index.html', context={'topstories': topstories})
 
 
